@@ -13,7 +13,11 @@ class EncryptedFilePersister():
 
     @staticmethod
     def output_random_password():
-        """Print a random encryption password to the console."""
+        """Print a random encryption password to the console.
+
+        To get a password, run this file and copy-paste the output into the 'CIVIS_ENCRYPT_PASSWORD'
+        environmental variable.
+        """
         print(Fernet.generate_key())
 
 
@@ -45,3 +49,7 @@ class EncryptedFilePersister():
         key_data = json.loads(decrypted_json)
 
         return CivisApiKey.from_civis(key_data)
+
+
+if __name__ == '__main__':
+    print(EncryptedFilePersister.output_random_password())
