@@ -20,3 +20,14 @@ def local_machine_key_manager(initial_key=None, days_replace=2):
         days_replace=days_replace,
         initial_key=initial_key
     )
+
+
+def flask_server_key_manager(initial_key=None, days_replace=2):
+    from server_services import UwsgiLock, RedisStore
+
+    return CivisKeyManager(
+        RedisStore(),
+        UwsgiLock(),
+        days_replace=days_replace,
+        initial_key=initial_key
+    )

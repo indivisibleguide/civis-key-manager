@@ -10,14 +10,30 @@ class CivisKeyManager():
         self.persist = persist
         self.lock_manager = lock_manager
         self.days_replace = days_replace
+        self.initial_key = initial_key
+        self.__key = None
 
-        saved_key = persist.load_key()
-        if saved_key is not None:
-            self.__key = saved_key
-        elif isinstance(initial_key, str):
-            self.__key = CivisApiKey(token=initial_key)
-        elif isinstance(initial_key, CivisApiKey):
-            self.__key = initial_key
+
+    def load_key(self):
+        """Look for a persisted key. If none, use the supplied `initial_key`.
+
+        Is called at the start of `key()`. Can be called on its own if
+        you want to load the stored key.
+
+        Does nothing if the key has already been loaded.
+        """
+        self.lock_manager.acquire()
+
+        if self.__key is None:
+            saved_key = self.persist.load_key()
+            if saved_key is not None:
+                self.__key = saved_key
+            elif isinstance(self.initial_key, str):
+                self.__key = CivisApiKey(token=self.initial_key)
+            elif isinstance(self.initial_key, CivisApiKey):
+                self.__key = self.initial_key
+
+        self.lock_manager.release()
 
 
     def update_key(self):
@@ -42,6 +58,8 @@ class CivisKeyManager():
 
 
     def key(self):
+        self.load_key()
+
         self.lock_manager.acquire()
 
         key = None
@@ -70,15 +88,15 @@ def main():
 
     # print(key.days_remaining())
 
-    #persist = EncryptedFilePersister()
+    from file_persist import EncryptedFilePersister
+
+    persist = EncryptedFilePersister()
     #key = CivisApiKey(id=123, name="TestKey", token="boofarbar")
 
     #persist.save_key(key)
 
     key = persist.load_key()
-    print(key.id)
-    print(key.token)
-    print(key.name)
+    print(key.__dict__)
 
 
 if __name__ == '__main__':
