@@ -21,18 +21,15 @@ class EncryptedPersister(ABC):
         """
         print(Fernet.generate_key())
 
-
     def __init__(self, password=None):
         if password is None:
             self.password = os.getenv('CIVIS_ENCRYPT_PASSWORD')
         else:
             self.password = password
 
-
     @abstractmethod
     def _save_encrypted_key(self, keystr):
         pass
-
 
     def save_key(self, key):
         raw_json = json.dumps(key.__dict__)
@@ -42,11 +39,9 @@ class EncryptedPersister(ABC):
 
         self._save_encrypted_key(encrypted_json.decode())
 
-
     @abstractmethod
     def _load_encrypted_key(self):
         pass
-
 
     def load_key(self):
         encrypted_json = self._load_encrypted_key()
@@ -66,12 +61,10 @@ class EncryptedFilePersister(EncryptedPersister):
         self.filename = filename
         super().__init__(password)
 
-
     def _save_encrypted_key(self, keystr):
         f = open(self.filename, "w")
         f.write(keystr)
         f.close()
-
 
     def _load_encrypted_key(self):
         if not os.path.exists(self.filename):

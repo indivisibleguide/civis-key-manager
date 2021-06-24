@@ -2,6 +2,7 @@ import os
 import civis
 from datetime import date, datetime
 
+
 class CivisApiKey():
     """This class stores the data about a Civis API key."""
 
@@ -34,7 +35,6 @@ class CivisApiKey():
             return None
 
         return CivisApiKey(token=api_key)
-
 
     def __init__(
             self,
@@ -69,7 +69,6 @@ class CivisApiKey():
         self.constraints = constraints
         self.token = token
 
-
     def days_remaining(self):
         """Return the number of days remaining until this key expires.
 
@@ -85,7 +84,6 @@ class CivisApiKey():
             "%Y-%m-%dT%H:%M:%S.000Z"
         ).date()
         return max((expires_date - date.today()).days, 0)
-
 
     def client(self):
         """Create a Civis APIClient that uses this token.

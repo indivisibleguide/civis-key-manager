@@ -1,4 +1,3 @@
-import civis
 from datetime import datetime
 import logging
 
@@ -12,7 +11,6 @@ class CivisKeyManager():
         self.days_replace = days_replace
         self.initial_key = initial_key
         self.__key = None
-
 
     def load_key(self):
         """Look for a persisted key. If none, use the supplied `initial_key`.
@@ -35,7 +33,6 @@ class CivisKeyManager():
 
         self.lock_manager.release()
 
-
     def update_key(self):
         logging.info("Requesting new key from civis.")
 
@@ -56,7 +53,6 @@ class CivisKeyManager():
             print("Bad key response")
             return None
 
-
     def key(self):
         self.load_key()
 
@@ -74,30 +70,6 @@ class CivisKeyManager():
 
         return key
 
-
     def client(self):
         """Get a Civis API Client with the current or updated key."""
         return self.key().client()
-
-
-def main():
-    #import code; code.interact(local=dict(globals(), **locals()))
-    # client = civis.APIClient()
-    # keys = client.users.list_api_keys('me')
-    # key = CivisApiKey.from_civis(keys[0])
-
-    # print(key.days_remaining())
-
-    from file_persist import EncryptedFilePersister
-
-    persist = EncryptedFilePersister()
-    #key = CivisApiKey(id=123, name="TestKey", token="boofarbar")
-
-    #persist.save_key(key)
-
-    key = persist.load_key()
-    print(key.__dict__)
-
-
-if __name__ == '__main__':
-    main()
