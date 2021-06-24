@@ -1,9 +1,11 @@
 from civis_key_manager import CivisKeyManager
-from file_persist import EncryptedFilePersister
-from threading import Lock
+from civis_api_key import CivisApiKey
 
 
 def local_machine_key_manager(initial_key=None, days_replace=2):
+    from file_services import EncryptedFilePersister
+    from threading import Lock
+
     """Create a CivisKeyManager suitable for a development machine.
 
     Stores keys in an encrypted file on the hard drive. Uses thread safe,
