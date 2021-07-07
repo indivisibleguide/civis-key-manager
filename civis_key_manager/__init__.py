@@ -1,5 +1,4 @@
 from civis_key_manager import CivisKeyManager
-from civis_api_key import CivisApiKey
 
 
 def local_machine_key_manager(initial_key=None, days_replace=2):
