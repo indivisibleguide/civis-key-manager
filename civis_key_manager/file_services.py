@@ -1,64 +1,26 @@
-from cryptography.fernet import Fernet
-from abc import ABC, abstractmethod
-import json
 import os
 
-from civis_api_key import CivisApiKey
-
-
-class EncryptedPersister(ABC):
-    """This class stores Civis API Keys in an encrypted text file.
-
-    By default, uses an encryption password from the env variable 'CIVIS_ENCRYPT_PASSWORD'
-    """
-
-    @staticmethod
-    def output_random_password():
-        """Print a random encryption password to the console.
-
-        To get a password, run this file and copy-paste the output into the 'CIVIS_ENCRYPT_PASSWORD'
-        environmental variable.
-        """
-        print(Fernet.generate_key())
-
-    def __init__(self, password=None):
-        if password is None:
-            self.password = os.getenv('CIVIS_ENCRYPT_PASSWORD')
-        else:
-            self.password = password
-
-    @abstractmethod
-    def _save_encrypted_key(self, keystr):
-        pass
-
-    def save_key(self, key):
-        raw_json = json.dumps(key.__dict__)
-
-        fernet = Fernet(self.password)
-        encrypted_json = fernet.encrypt(raw_json.encode())
-
-        self._save_encrypted_key(encrypted_json.decode())
-
-    @abstractmethod
-    def _load_encrypted_key(self):
-        pass
-
-    def load_key(self):
-        encrypted_json = self._load_encrypted_key()
-
-        if encrypted_json is None:
-            return None
-
-        fernet = Fernet(self.password)
-        decrypted_json = fernet.decrypt(encrypted_json.encode()).decode()
-        key_data = json.loads(decrypted_json)
-
-        return CivisApiKey.from_civis(key_data)
+from civis_key_manager.encrypted_services import EncryptedPersister
 
 
 class EncryptedFilePersister(EncryptedPersister):
-    def __init__(self, password=None, filename="key.cky"):
-        self.filename = filename
+    """Save a key in an encrypted file.
+
+    File location used:
+    1. `filename` argument passed into constructor.
+    2. `CIVIS_KEY_FILE` environmental variable.
+    3. `key.cfy` file in the local directory.
+    """
+
+    def __init__(self, password=None, filename=None):
+        if filename is None:
+            env_filename = os.getenv('CIVIS_KEY_FILE')
+            if env_filename is not None:
+                self.filename = env_filename
+            else:
+                self.filename = "key.cky"
+        else:
+            self.filename = filename
         super().__init__(password)
 
     def _save_encrypted_key(self, keystr):

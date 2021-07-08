@@ -5,7 +5,7 @@ import uwsgi
 import os
 import redis
 
-from file_persist import EncryptedPersister
+from civis_key_manager.encrypted_services import EncryptedPersister
 
 REDIS_URL = os.getenv("REDIS_URL")
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 
-from civis_api_key import CivisApiKey
+from civis_key_manager.civis_api_key import CivisApiKey
 
 
 class CivisKeyManager():
@@ -25,11 +25,16 @@ class CivisKeyManager():
         if self.__key is None:
             saved_key = self.persist.load_key()
             if saved_key is not None:
+                logging.debug("Loaded key from saved key.")
                 self.__key = saved_key
             elif isinstance(self.initial_key, str):
+                logging.debug("Loaded key from initial key string.")
                 self.__key = CivisApiKey(token=self.initial_key)
             elif isinstance(self.initial_key, CivisApiKey):
+                logging.debug("Loaded key from initial key object.")
                 self.__key = self.initial_key
+            else:
+                raise Exception("No valid Civis key found!")
 
         self.lock_manager.release()
 
